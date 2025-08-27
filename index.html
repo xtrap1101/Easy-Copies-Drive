@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Drive Copier Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tab-container {
+            display: flex;
+            margin-bottom: 30px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            padding: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type="url"], input[type="file"] {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        input[type="url"]:focus, input[type="file"]:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .login-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            margin: 20px auto;
+            display: block;
+            width: fit-content;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(66, 133, 244, 0.4);
+        }
+
+        #results {
+            margin-top: 30px;
+            display: none;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .progress-section h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .progress-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 25px;
+            padding: 4px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 35px;
+            background: linear-gradient(90deg, #00c851, #007e33);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            min-width: 50px;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        #progress-text {
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .log-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            max-height: 350px;
+            overflow-y: auto;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .log-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .log-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .log-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .log-entry {
+            margin: 6px 0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: "SF Mono", Consolas, "Liberation Mono", monospace;
+            word-break: break-word;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.9);
+            border-left: 3px solid rgba(255, 255, 255, 0.2);
+            animation: slideIn 0.3s ease;
+        }
+
+        .log-entry.error {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            border-left-color: #ff6b6b;
+        }
+
+        .log-entry.success {
+            color: #51cf66;
+            background: rgba(81, 207, 102, 0.1);
+            border-left-color: #51cf66;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .file-upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .file-upload-area:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .file-upload-area.dragover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.7;
+        }
+
+        .batch-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 10px;
+            }
+            
+            .glass-card {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .tab-container {
+                flex-direction: column;
+            }
+            
+            .tab-btn {
+                margin-bottom: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="glass-card">
+            {% if logged_in %}
+                <a href="{{ url_for('logout') }}" class="logout-btn">Đăng xuất</a>
+            {% endif %}
+
+            <h1>Google Drive Copier Pro</h1>
+
+            {% if not logged_in %}
+                <p style="text-align: center; color: rgba(255,255,255,0.9); margin-bottom: 30px; font-size: 18px;">
+                    Vui lòng đăng nhập bằng tài khoản Google để bắt đầu sao chép files
+                </p>
+                <a href="{{ url_for('login') }}" class="login-btn">🚀 Đăng nhập với Google</a>
+            {% else %}
+                <div class="tab-container">
+                    <button class="tab-btn active" data-tab="single">Sao chép đơn lẻ</button>
+                    <button class="tab-btn" data-tab="batch">Sao chép hàng loạt</button>
+                </div>
+
+                <div id="single-tab" class="tab-content active">
+                    <form id="copy-form">
+                        <div class="form-group">
+                            <label for="drive_url">🔗 Link Google Drive nguồn:</label>
+                            <input id="drive_url" type="url" name="drive_url" placeholder="Dán link của file hoặc thư mục cần sao chép..." required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="destination_url">📁 Link thư mục đích (Tùy chọn):</label>
+                            <input id="destination_url" type="url" name="destination_url" placeholder="Để trống nếu muốn sao chép vào My Drive">
+                        </div>
+                        
+                        <button type="submit" id="submit-btn" class="btn">🚀 Bắt đầu sao chép</button>
+                    </form>
+                </div>
+
+                <div id="batch-tab" class="tab-content">
+                    <form id="batch-copy-form">
+                        <div class="form-group">
+                            <label for="excel_file">📊 Upload file Excel (xlsx/csv):</label>
+                            <div class="file-upload-area" id="file-upload-area">
+                                <div class="upload-icon">📄</div>
+                                <p style="color: white; margin-bottom: 10px;">Kéo thả file Excel vào đây hoặc click để chọn</p>
+                                <input type="file" id="excel_file" name="excel_file" accept=".xlsx,.xls,.csv" style="display: none;" required>
+                            </div>
+                            <div class="batch-info">
+                                <strong>Định dạng file Excel:</strong><br>
+                                - Cột A: Link Google Drive nguồn<br>
+                                - Cột B: Link thư mục đích (tùy chọn)<br>
+                                - Hàng đầu tiên sẽ bị bỏ qua (header)
+                            </div>
+                        </div>
+                        
+                        <button type="submit" id="batch-submit-btn" class="btn">🚀 Bắt đầu sao chép hàng loạt</button>
+                    </form>
+                </div>
+
+                <div id="results">
+                    <div class="progress-section">
+                        <h3>📊 Tiến trình Sao chép</h3>
+                        <div class="progress-container">
+                            <div class="progress-bar" id="progress-bar">0%</div>
+                        </div>
+                        <div id="progress-text"></div>
+                        <div class="log-container" id="log-container"></div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.dataset.tab;
+                
+                // Update active tab button
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Update active tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(tabName + '-tab').classList.add('active');
+            });
+        });
+
+        // File upload area functionality
+        const fileUploadArea = document.getElementById('file-upload-area');
+        const fileInput = document.getElementById('excel_file');
+
+        if (fileUploadArea && fileInput) {
+            fileUploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            fileUploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUploadArea.classList.add('dragover');
+            });
+
+            fileUploadArea.addEventListener('dragleave', () => {
+                fileUploadArea.classList.remove('dragover');
+            });
+
+            fileUploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    updateFileUploadDisplay(files[0].name);
+                }
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    updateFileUploadDisplay(e.target.files[0].name);
+                }
+            });
+        }
+
+        function updateFileUploadDisplay(fileName) {
+            if (fileUploadArea) {
+                const uploadIcon = fileUploadArea.querySelector('.upload-icon');
+                const uploadText = fileUploadArea.querySelector('p');
+                if (uploadIcon) uploadIcon.textContent = '✅';
+                if (uploadText) uploadText.innerHTML = `<strong style="color: #51cf66;">Đã chọn:</strong> ${fileName}`;
+            }
+        }
+
+        // Enhanced logging function
+        function addLogEntry(message, type = 'info') {
+            const logContainer = document.getElementById('log-container');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = message;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // Single copy form handler
+        const copyForm = document.getElementById('copy-form');
+        if (copyForm) {
+            copyForm.addEventListener('submit', handleFormSubmit);
+        }
+
+        // Batch copy form handler  
+        const batchForm = document.getElementById('batch-copy-form');
+        if (batchForm) {
+            batchForm.addEventListener('submit', handleBatchFormSubmit);
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('submit-btn');
+            startCopyProcess('copy', new FormData(copyForm), submitBtn);
+        }
+
+        function handleBatchFormSubmit(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('batch-submit-btn');
+            startCopyProcess('batch_copy', new FormData(batchForm), submitBtn);
+        }
+
+        function startCopyProcess(endpoint, formData, submitBtn) {
+            // Disable button and show results
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Đang xử lý...';
+            
+            const resultsDiv = document.getElementById('results');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const logContainer = document.getElementById('log-container');
+            
+            resultsDiv.style.display = 'block';
+            logContainer.innerHTML = '';
+            progressBar.style.width = '0%';
+            progressBar.textContent = '0%';
+            progressText.textContent = '';
+
+            // Use EventSource for streaming
+            let url;
+            if (endpoint === 'batch_copy') {
+                // For batch copy, we need to use POST method, so we'll use fetch instead
+                handleBatchCopyWithFetch(formData, submitBtn, resultsDiv, progressBar, progressText, logContainer);
+                return;
+            } else {
+                url = `/${endpoint}?${new URLSearchParams(formData).toString()}`;
+            }
+            const source = new EventSource(url);
+
+            source.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+
+                    // Update progress bar
+                    if (data.percent !== undefined) {
+                        progressBar.style.width = data.percent + '%';
+                        progressBar.textContent = data.percent + '%';
+                    }
+
+                    // Add log entry
+                    if (data.message) {
+                        const type = data.isError ? 'error' : (data.message.includes('✔️') ? 'success' : 'info');
+                        addLogEntry(data.message, type);
+                        
+                        if (!data.message.includes('✔️')) {
+                            progressText.textContent = data.message.replace(/<[^>]*>?/gm, '');
+                        }
+                    }
+
+                    // Handle completion
+                    if (data.percent === 100 || data.message === '🎉 Hoàn thành!') {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = submitBtn.id === 'submit-btn' ? '🚀 Bắt đầu sao chép' : '🚀 Bắt đầu sao chép hàng loạt';
+                        progressText.textContent = '✅ Đã hoàn tất!';
+                        source.close();
+                    }
+                } catch (e) {
+                    console.error('Error parsing event data:', e);
+                }
+            };
+
+            source.onerror = function(err) {
+                console.error("EventSource failed:", err);
+                addLogEntry('❌ Mất kết nối tới máy chủ. Vui lòng thử lại.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = submitBtn.id === 'submit-btn' ? '🚀 Bắt đầu sao chép' : '🚀 Bắt đầu sao chép hàng loạt';
+                source.close();
+            };
+        }
+
+        function handleBatchCopyWithFetch(formData, submitBtn, resultsDiv, progressBar, progressText, logContainer) {
+            fetch('/batch_copy', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                
+                function readStream() {
+                    return reader.read().then(({ done, value }) => {
+                        if (done) {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = '🚀 Bắt đầu sao chép hàng loạt';
+                            progressText.textContent = '✅ Đã hoàn tất!';
+                            return;
+                        }
+                        
+                        const chunk = decoder.decode(value);
+                        const lines = chunk.split('\n');
+                        
+                        lines.forEach(line => {
+                            if (line.startsWith('data: ')) {
+                                try {
+                                    const data = JSON.parse(line.substring(6));
+                                    
+                                    // Update progress bar
+                                    if (data.percent !== undefined) {
+                                        progressBar.style.width = data.percent + '%';
+                                        progressBar.textContent = data.percent + '%';
+                                    }
+                                    
+                                    // Add log entry
+                                    if (data.message) {
+                                        const type = data.isError ? 'error' : (data.message.includes('✔️') ? 'success' : 'info');
+                                        addLogEntry(data.message, type);
+                                        
+                                        if (!data.message.includes('✔️')) {
+                                            progressText.textContent = data.message.replace(/<[^>]*>?/gm, '');
+                                        }
+                                    }
+                                    
+                                    // Handle completion
+                                    if (data.percent === 100 || data.message === '🎉 Hoàn thành!') {
+                                        submitBtn.disabled = false;
+                                        submitBtn.textContent = '🚀 Bắt đầu sao chép hàng loạt';
+                                        progressText.textContent = '✅ Đã hoàn tất!';
+                                        return;
+                                    }
+                                } catch (e) {
+                                    console.error('Error parsing event data:', e);
+                                }
+                            }
+                        });
+                        
+                        return readStream();
+                    });
+                }
+                
+                return readStream();
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                addLogEntry('❌ Lỗi kết nối: ' + error.message, 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🚀 Bắt đầu sao chép hàng loạt';
+            });
+        }
+    </script>
+</body>
+</html>

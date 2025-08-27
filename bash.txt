@@ -1,0 +1,10 @@
+pip install flask google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client pandas openpyxl
+
+/home/yourusername/mysite/
+├── flask_app.py                 # File Flask chính (tên PHẢI là flask_app.py)
+├── templates/
+│   └── index.html              # File template HTML
+├── static/                     # (Tùy chọn - cho CSS/JS riêng)
+├── credentials.json            # File Google OAuth credentials
+├── requirements.txt            # Danh sách thư viện cần cài
+└── tmp/                       # Thư mục tạm cho upload files
